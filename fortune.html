@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fortune Teller Generator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", Arial, sans-serif;
+      background: linear-gradient(135deg, #1b1038, #2b1457, #4a1f74, #12091f);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+      overflow-x: hidden;
+    }
+
+    .stars {
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(2px 2px at 20px 30px, white, transparent),
+        radial-gradient(2px 2px at 120px 80px, #ffd6ff, transparent),
+        radial-gradient(1.5px 1.5px at 250px 150px, white, transparent),
+        radial-gradient(2px 2px at 400px 40px, #c8f7ff, transparent),
+        radial-gradient(1.5px 1.5px at 600px 200px, white, transparent),
+        radial-gradient(2px 2px at 900px 120px, #ffe8a3, transparent);
+      background-size: 1000px 400px;
+      animation: twinkle 8s linear infinite;
+      opacity: 0.5;
+      z-index: 0;
+    }
+
+    @keyframes twinkle {
+      from { transform: translateY(0); }
+      to { transform: translateY(-40px); }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 850px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      border-radius: 28px;
+      padding: 35px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(12px);
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 3rem;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: #eadcff;
+      margin-bottom: 30px;
+    }
+
+    .crystal-ball {
+      width: 190px;
+      height: 190px;
+      margin: 0 auto 25px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #ffffff, #b983ff 30%, #5a2a99 65%, #261046 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 0 25px rgba(200, 145, 255, 0.8),
+        0 0 60px rgba(151, 71, 255, 0.45);
+      animation: floatBall 3s ease-in-out infinite;
+      position: relative;
+    }
+
+    .crystal-ball::before {
+      content: "";
+      position: absolute;
+      width: 55px;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.35);
+      border-radius: 50%;
+      top: 28px;
+      left: 35px;
+      transform: rotate(-20deg);
+    }
+
+    .ball-emoji {
+      font-size: 3.4rem;
+      filter: drop-shadow(0 0 10px rgba(255,255,255,0.6));
+    }
+
+    @keyframes floatBall {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+
+    select, button, input {
+      border: none;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    select, input {
+      background: rgba(255, 255, 255, 0.92);
+      color: #2b1457;
+      min-width: 180px;
+    }
+
+    button {
+      background: linear-gradient(135deg, #ff7ad9, #9f6fff);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+      box-shadow: 0 8px 20px rgba(159, 111, 255, 0.35);
+    }
+
+    button:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 12px 26px rgba(159, 111, 255, 0.5);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .fortune-card {
+      margin-top: 10px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 22px;
+      padding: 28px;
+      min-height: 170px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+    }
+
+    .fortune-label {
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 0.85rem;
+      color: #ffd8f5;
+      margin-bottom: 12px;
+    }
+
+    .fortune-text {
+      font-size: 1.5rem;
+      line-height: 1.5;
+      font-weight: bold;
+      color: #fff9ff;
+      margin-bottom: 16px;
+    }
+
+    .fortune-extra {
+      font-size: 1rem;
+      color: #eadcff;
+      line-height: 1.5;
+    }
+
+    .tiny-note {
+      margin-top: 20px;
+      color: #d9c5f7;
+      font-size: 0.95rem;
+    }
+
+    .sparkle {
+      position: absolute;
+      font-size: 1.3rem;
+      animation: drift 4s infinite ease-in-out;
+      opacity: 0.8;
+    }
+
+    .sparkle1 { top: 45px; left: 80px; }
+    .sparkle2 { top: 120px; right: 120px; animation-delay: 1s; }
+    .sparkle3 { bottom: 70px; left: 120px; animation-delay: 2s; }
+
+    @keyframes drift {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-12px) rotate(12deg); }
+    }
+
+    .link-box {
+      margin-top: 26px;
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.08);
+      color: #f4e8ff;
+      font-size: 0.95rem;
+    }
+
+    code {
+      background: rgba(255,255,255,0.14);
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    @media (max-width: 700px) {
+      h1 {
+        font-size: 2.2rem;
+      }
+
+      .fortune-text {
+        font-size: 1.2rem;
+      }
+
+      .container {
+        padding: 24px;
+      }
+
+      .crystal-ball {
+        width: 150px;
+        height: 150px;
+      }
+
+      .ball-emoji {
+        font-size: 2.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+
+  <div class="container">
+    <div class="sparkle sparkle1">✨</div>
+    <div class="sparkle sparkle2">🔮</div>
+    <div class="sparkle sparkle3">⭐</div>
+
+    <h1>Madame Giggles' Fortune Teller</h1>
+    <p class="subtitle">
+      Ask the universe your burning question... and receive an extremely questionable prophecy.
+    </p>
+
+    <div class="crystal-ball">
+      <div class="ball-emoji">🔮</div>
+    </div>
+
+    <div class="controls">
+      <input type="text" id="nameInput" placeholder="Enter your name (optional)" />
+      
+      <select id="category">
+        <option value="general">General Chaos</option>
+        <option value="love">Love</option>
+        <option value="school">School</option>
+        <option value="money">Money</option>
+        <option value="future">Future</option>
+      </select>
+
+      <button onclick="tellFortune()">Reveal My Fortune</button>
+      <button onclick="randomMystery()">Mystery Button</button>
+    </div>
+
+    <div class="fortune-card">
+      <div class="fortune-label">Your prophecy</div>
+      <div class="fortune-text" id="fortuneText">
+        The crystal ball is warming up...
+      </div>
+      <div class="fortune-extra" id="fortuneExtra">
+        Choose a category and click the button to discover your destiny.
+      </div>
+    </div>
+
+    <p class="tiny-note">
+      Warning: fortunes are not legally, emotionally, or spiritually binding.
+    </p>
+
+    
+  </div>
+
+  <script>
+    const fortunes = {
+      general: [
+        "You will trip over nothing in public, but recover so confidently people will think it was a dance move.",
+        "A suspiciously good day is coming. Stay alert.",
+        "You will remember something embarrassing from 2017 at exactly 11:43 PM.",
+        "Soon, you will open the fridge, stare into it dramatically, and still find no answers.",
+        "The universe sees your effort and recommends a snack.",
+        "A mildly inconvenient plot twist is headed your way, but you'll make it funny.",
+        "You are closer than ever to becoming the kind of person who uses a planner correctly."
+      ],
+      love: [
+        "Romance is near... or maybe it's just someone making eye contact for too long.",
+        "Your love life will improve when you stop overanalyzing punctuation in texts.",
+        "Cupid has your address but poor time management.",
+        "A crush may appear soon. Try not to act like a Victorian ghost about it.",
+        "Love is in the air, but so is confusion.",
+        "Someone finds you intriguing. They are also intimidated by your ability to notice everything.",
+        "Your next romantic interaction may include flirting, awkwardness, or both."
+      ],
+      school: [
+        "You will survive your assignments through grit, caffeine, and last-minute excellence.",
+        "A quiz shall appear when you least expect it, like an academic jump scare.",
+        "Your brain will suddenly work at full power exactly one hour before something is due.",
+        "A group project approaches. Be brave.",
+        "You will open twelve tabs for one assignment and use two of them.",
+        "One day soon, you will understand the lecture... three days later.",
+        "An A is possible, but so is a dramatic study session."
+      ],
+      money: [
+        "Financial abundance is on its way, but so is the temptation to buy a little treat.",
+        "You will save money this week unless you enter a bookstore, coffee shop, or online sale.",
+        "A wise purchase is coming. So is one weird one.",
+        "The stars say: check your bank account before saying 'it's fine.'",
+        "Money flows in mysterious ways, mostly out.",
+        "Soon you will justify buying something by calling it an 'investment.'",
+        "Your wallet would like a moment of silence."
+      ],
+      future: [
+        "In the near future, you will be weirdly good at something no one expected.",
+        "Your destiny includes growth, success, and forgetting why you walked into a room.",
+        "A new opportunity is coming, dressed as something mildly inconvenient.",
+        "Your future self is proud of you but wishes you'd drink more water.",
+        "Big things are ahead. So are small confusing things.",
+        "You will become iconic in a very specific niche way.",
+        "The path ahead is bright, slightly chaotic, and probably under-caffeinated."
+      ]
+    };
+
+    const extras = [
+      "Lucky object: a dramatic pen.",
+      "Lucky snack: garlic bread.",
+      "Lucky number: 7. Or 47. Hard to tell.",
+      "Cosmic advice: stop refreshing your inbox.",
+      "Danger level: emotionally overthinking a harmless conversation.",
+      "Best move today: pretend you know what you're doing.",
+      "Aura status: sparkly but tired.",
+      "Moon energy: theatrical.",
+      "Recommended ritual: one deep breath and a silly little walk.",
+      "Mystic warning: do not text that person from pure boredom."
+    ];
+
+    const mysteryResults = [
+      "The spirits have spoken: you need a nap.",
+      "A raccoon of opportunity crosses your path.",
+      "Bad news: chaos. Good news: hilarious chaos.",
+      "Your destiny today is to absolutely crush one oddly specific task.",
+      "The moon says 'slay,' but in an ancient and mysterious tone.",
+      "You will soon receive either clarity or a funny coincidence."
+    ];
+
+    function getRandomItem(array) {
+      return array[Math.floor(Math.random() * array.length)];
+    }
+
+    function tellFortune() {
+      const category = document.getElementById("category").value;
+      const name = document.getElementById("nameInput").value.trim();
+      const fortune = getRandomItem(fortunes[category]);
+      const extra = getRandomItem(extras);
+
+      const greeting = name ? name + ", " : "";
+
+      document.getElementById("fortuneText").textContent = greeting + fortune;
+      document.getElementById("fortuneExtra").textContent = extra;
+    }
+
+    function randomMystery() {
+      const mystery = getRandomItem(mysteryResults);
+      const extra = getRandomItem(extras);
+
+      document.getElementById("fortuneText").textContent = mystery;
+      document.getElementById("fortuneExtra").textContent = "Bonus cosmic detail: " + extra;
+    }
+  </script>
+</body>
+</html>
